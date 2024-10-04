@@ -3,21 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اماكن الترفيه والسهر</title>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <title>أماكن الترفيه والسهر</title>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+        #map {
+            width: 50%;
+            height: 100%;
+            position: relative;
+        }
+        #info-container {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .place-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .place-info img {
+            max-width: 100%;
+            height: auto;
+        }
+        #locate-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #locate-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div id="map"></div>
-        <div id="info-panel">
-            <h2>معلومات المكان</h2>
-            <div id="location-info">
-                <p>اختر مكانًا من الخريطة لعرض المعلومات</p>
-            </div>
-        </div>
+    <div id="map">
+        <button id="locate-button">تحديد موقعي</button>
     </div>
+    <div id="info-container"></div>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src="index.js"></script>
 </body>
 </html>
