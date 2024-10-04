@@ -3,25 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أماكن الترفيه والسهر في الرياض</title>
+    <title>اماكن الترفيه والسهر</title>
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>أماكن الترفيه والسهر في الرياض</h1>
-        <div class="map-info-container">
-            <div id="map-container">
-                <div id="map"></div>
-                <button id="locate-me" class="locate-button">حدد موقعي</button>
-            </div>
-            <div id="location-info" class="location-info">
-                <h2>معلومات الموقع</h2>
-                <div id="location-details"></div>
+        <div id="map"></div>
+        <div id="info-panel">
+            <h2>معلومات المكان</h2>
+            <div id="location-info">
+                <p>اختر مكانًا من الخريطة لعرض المعلومات</p>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
