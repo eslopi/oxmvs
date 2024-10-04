@@ -13,16 +13,16 @@
             display: flex;
             height: 100vh;
         }
-        #map {
-            width: 50%;
-            height: 100%;
-            position: relative;
-        }
         #info-container {
             width: 50%;
             padding: 20px;
             box-sizing: border-box;
             overflow-y: auto;
+        }
+        #map {
+            width: 50%;
+            height: 100%;
+            position: relative;
         }
         .place-info {
             margin-bottom: 20px;
@@ -37,7 +37,7 @@
         #locate-button {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left: 10px;
             z-index: 1;
             padding: 10px;
             background-color: #4CAF50;
@@ -52,10 +52,10 @@
     </style>
 </head>
 <body>
+    <div id="info-container"></div>
     <div id="map">
         <button id="locate-button">تحديد موقعي</button>
     </div>
-    <div id="info-container"></div>
 
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src="index.js"></script>
