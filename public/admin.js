@@ -18,6 +18,7 @@ map.on('click', (e) => {
     if (marker) marker.remove();
     marker = new mapboxgl.Marker()
         .setLngLat([lng, lat])
+        
         .addTo(map);
 });
 
@@ -102,3 +103,50 @@ function deletePlace(index) {
 
 // تحديث الجدول عند تحميل الصفحة
 updatePlacesTable();
+// إضافة وظيفة تحديد الموقع
+const locateButton = document.getElementById('locate-button');
+let userLocationMarker;
+
+locateButton.addEventListener('click', () => {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // تحريك الخريطة إلى الموقع الحالي
+            map.flyTo({
+                center: [lng, lat],
+                zoom: 14
+            });
+
+            // إزالة العلامة السابقة للمستخدم إن وجدت
+            if (userLocationMarker) {
+                userLocationMarker.remove();
+            }
+
+            // إضافة علامة جديدة على الموقع الحالي
+            userLocationMarker = new mapboxgl.Marker({ color: '#FF0000' })
+                .setLngLat([lng, lat])
+                .setPopup(new mapboxgl.Popup().setHTML("<h3>موقعك الحالي</h3>"))
+                .addTo(map);
+
+            // تحديث حقول النموذج بالإحداثيات الحالية
+            document.getElementById('lat').value = lat.toFixed(6);
+            document.getElementById('lng').value = lng.toFixed(6);
+
+            // إزالة العلامة السابقة إن وجدت
+            if (marker) marker.remove();
+            
+            // إضافة علامة جديدة للموقع المحدد
+            marker = new mapboxgl.Marker()
+                .setLngLat([lng, lat])
+                .addTo(map);
+
+        }, (error) => {
+            console.error("خطأ في تحديد الموقع:", error.message);
+            alert("حدث خطأ أثناء محاولة تحديد موقعك. يرجى التأكد من تفعيل خدمة تحديد الموقع.");
+        });
+    } else {
+        alert("متصفحك لا يدعم تحديد الموقع.");
+    }
+});
