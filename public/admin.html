@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+        <button id="locateButton" title="تحديد موقعك الحالي">📍</button>
+    </div>
+    <form id="locationForm">
+        <input type="text" id="name" placeholder="اسم الموقع" required>
+        <input type="text" id="description" placeholder="وصف الموقع" required>
+        <input type="text" id="info" placeholder="معلومات إضافية">
+        <input type="number" id="latitude" placeholder="خط العرض" step="any" required>
+        <input type="number" id="longitude" placeholder="خط الطول" step="any" required>
+        <button type="submit">إضافة موقع</button>
+    </form>
+    <table id="locationsTable">
+        <thead>
+            <tr>
+                <th>الاسم</th>
+                <th>الوصف</th>
+                <th>معلومات</th>
+                <th>خط العرض</th>
+                <th>خط الطول</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="locationsTableBody"></tbody>
+    </table>
+    <script src="admin.js"></script>
+</body>
+</html>

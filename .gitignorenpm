@@ -1,0 +1,3 @@
+  init -y
+node_modules/
+.env
