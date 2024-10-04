@@ -1,116 +1,67 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A'; // استبدل بمفتاح الوصول الخاص بك
-
-let map;
-let marker;
-
-document.addEventListener('DOMContentLoaded', function() {
-    initMap();
-    loadLocations();
-
-    document.getElementById('locationForm').addEventListener('submit', addLocation);
-    document.getElementById('locateButton').addEventListener('click', locateUser);
+mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [45, 25],
+    zoom: 5
 });
 
-function initMap() {
-    map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [46.6753, 24.7136], // خطوط الطول والعرض لمدينة الرياض
-        zoom: 9
-    });
+const form = document.getElementById('place-form');
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const description = document.getElementById('description').value;
+    const imageUrl = document.getElementById('image-url').value;
+    const lat = parseFloat(document.getElementById('latitude').value);
+    const lng = parseFloat(document.getElementById('longitude').value);
 
-    map.on('load', function () {
-        map.on('click', function(e) {
-            setMarker(e.lngLat);
-        });
-    });
-}
-
-function setMarker(lngLat) {
-    if (marker) {
-        marker.remove();
-    }
-    marker = new mapboxgl.Marker()
-        .setLngLat(lngLat)
+    new mapboxgl.Marker()
+        .setLngLat([lng, lat])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${name}</h3><p>${description}</p>`))
         .addTo(map);
 
-    document.getElementById('latitude').value = lngLat.lat.toFixed(6);
-    document.getElementById('longitude').value = lngLat.lng.toFixed(6);
-}
+    const places = JSON.parse(localStorage.getItem('places') || '[]');
+    places.push({ name, description, imageUrl, lat, lng });
+    localStorage.setItem('places', JSON.stringify(places));
 
-function locateUser() {
+    form.reset();
+});
+
+const savedPlaces = JSON.parse(localStorage.getItem('places') || '[]');
+savedPlaces.forEach(place => {
+    new mapboxgl.Marker()
+        .setLngLat([place.lng, place.lat])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
+        .addTo(map);
+});
+
+// إضافة زر تحديد الموقع
+const locateButton = document.getElementById('locate-button');
+locateButton.addEventListener('click', () => {
     if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            const lngLat = {
-                lng: position.coords.longitude,
-                lat: position.coords.latitude
-            };
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // تحديث حقول الإدخال بالإحداثيات الحالية
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            
+            // تحريك الخريطة إلى الموقع الحالي
             map.flyTo({
-                center: lngLat,
+                center: [lng, lat],
                 zoom: 14
             });
-            setMarker(lngLat);
-        }, function(error) {
-            console.error("خطأ في تحديد الموقع:", error);
-            alert("لم نتمكن من تحديد موقعك. يرجى التأكد من تفعيل خدمة تحديد الموقع في متصفحك.");
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
+
+            // إضافة علامة على الموقع الحالي
+            new mapboxgl.Marker()
+                .setLngLat([lng, lat])
+                .addTo(map);
+        }, (error) => {
+            console.error("خطأ في تحديد الموقع:", error.message);
+            alert("حدث خطأ أثناء محاولة تحديد موقعك. يرجى التأكد من تفعيل خدمة تحديد الموقع.");
         });
     } else {
         alert("متصفحك لا يدعم تحديد الموقع.");
     }
-}
-
-function addLocation(e) {
-    e.preventDefault();
-
-    const name = document.getElementById('name').value;
-    const description = document.getElementById('description').value;
-    const info = document.getElementById('info').value;
-    const latitude = parseFloat(document.getElementById('latitude').value);
-    const longitude = parseFloat(document.getElementById('longitude').value);
-
-    if (!name || isNaN(latitude) || isNaN(longitude)) {
-        alert('الرجاء إدخال جميع البيانات المطلوبة بشكل صحيح');
-        return;
-    }
-
-    const location = { name, description, info, latitude, longitude };
-
-    let locations = JSON.parse(localStorage.getItem('locations')) || [];
-    locations.push(location);
-    localStorage.setItem('locations', JSON.stringify(locations));
-
-    loadLocations();
-    document.getElementById('locationForm').reset();
-}
-
-function loadLocations() {
-    const locations = JSON.parse(localStorage.getItem('locations')) || [];
-    const tableBody = document.getElementById('locationsTableBody');
-    tableBody.innerHTML = '';
-
-    locations.forEach((location, index) => {
-        const row = tableBody.insertRow();
-        row.insertCell(0).textContent = location.name;
-        row.insertCell(1).textContent = location.description;
-        row.insertCell(2).textContent = location.info;
-        row.insertCell(3).textContent = location.latitude;
-        row.insertCell(4).textContent = location.longitude;
-
-        const actionsCell = row.insertCell(5);
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'حذف';
-        deleteButton.onclick = () => deleteLocation(index);
-        actionsCell.appendChild(deleteButton);
-    });
-}
-
-function deleteLocation(index) {
-    let locations = JSON.parse(localStorage.getItem('locations')) || [];
-    locations.splice(index, 1);
-    localStorage.setItem('locations', JSON.stringify(locations));
-    loadLocations();
-}
+});
