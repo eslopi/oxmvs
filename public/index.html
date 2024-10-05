@@ -7,35 +7,47 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; width: 70%; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: row-reverse;
+            height: 100vh;
+        }
+        #map { 
+            flex: 1;
+            height: 100%;
+        }
         #info-panel {
-            position: absolute;
-            top: 0;
-            right: 70%;
-            bottom: 0;
-            width: 30%;
+            flex: 1;
             padding: 20px;
             overflow-y: auto;
             background-color: #f8f8f8;
+        }
+        #place-info {
             display: none;
         }
-        #close-info {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
+        #no-place-selected {
+            display: block;
+            text-align: center;
+            padding-top: 50px;
+            color: #666;
         }
     </style>
 </head>
 <body>
-    <div id="map"></div>
     <div id="info-panel">
-        <span id="close-info">&times;</span>
-        <h2 id="place-name"></h2>
-        <p id="place-description"></p>
-        <img id="place-image" src="" alt="صورة المكان" style="max-width: 100%;">
+        <div id="no-place-selected">
+            <h2>مرحبًا بك في خريطة الأماكن</h2>
+            <p>يرجى النقر على أحد المعالم في الخريطة لعرض المعلومات</p>
+        </div>
+        <div id="place-info">
+            <h2 id="place-name"></h2>
+            <p id="place-description"></p>
+            <img id="place-image" src="" alt="صورة المكان" style="max-width: 100%;">
+        </div>
     </div>
+    <div id="map"></div>
     <script src="index.js"></script>
 </body>
 </html>
