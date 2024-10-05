@@ -1,63 +1,36 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
-
+mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
-    center: [45.0792, 23.8859],
+    center: [45, 25],
     zoom: 5
 });
 
-let places = [];
+const infoContainer = document.getElementById('info-container');
 
-function fetchPlaces() {
-    fetch('/api/places')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Fetched places:', data); // للتحقق من البيانات المستلمة
-            places = data;
-            addMarkers();
-        })
-        .catch(error => {
-            console.error('Error fetching places:', error);
-        });
-}
+const savedPlaces = JSON.parse(localStorage.getItem('places') || '[]');
 
-function addMarkers() {
-    places.forEach(place => {
-        if (!place.lng || !place.lat) {
-            console.error('Invalid coordinates for place:', place);
-            return;
-        }
+savedPlaces.forEach(place => {
+    new mapboxgl.Marker()
+        .setLngLat([place.lng, place.lat])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
+        .addTo(map);
 
-        const el = document.createElement('div');
-        el.className = 'marker';
-        el.style.backgroundImage = place.icon ? `url(${place.icon})` : 'url(https://placekitten.com/g/40/40)';
-        el.style.width = '30px';
-        el.style.height = '30px';
-        el.style.backgroundSize = '100%';
+    const placeInfo = document.createElement('div');
+    placeInfo.className = 'place-info';
+    placeInfo.innerHTML = `
+        <h2>${place.name}</h2>
+        <p>${place.description}</p>
+        ${place.imageUrl ? `<img src="${place.imageUrl}" alt="${place.name}">` : ''}
+        <p>الإحداثيات: ${place.lat}, ${place.lng}</p>
+    `;
+    infoContainer.appendChild(placeInfo);
+});
 
-        el.addEventListener('click', () => {
-            showPlaceInfo(place);
-        });
-
-        try {
-            new mapboxgl.Marker(el)
-                .setLngLat([parseFloat(place.lng), parseFloat(place.lat)])
-                .addTo(map);
-            console.log('Marker added for:', place.name);
-        } catch (error) {
-            console.error('Error adding marker for:', place.name, error);
-        }
+if (savedPlaces.length > 0) {
+    const bounds = new mapboxgl.LngLatBounds();
+    savedPlaces.forEach(place => {
+        bounds.extend([place.lng, place.lat]);
     });
+    map.fitBounds(bounds, { padding: 50 });
 }
-
-function showPlaceInfo(place) {
-    document.getElementById('place-name').textContent = place.name || 'غير معروف';
-    document.getElementById('place-description').textContent = place.description || 'لا يوجد وصف';
-    document.getElementById('place-image').src = place.image || 'https://placekitten.com/g/300/200';
-    document.getElementById('no-place-selected').style.display = 'none';
-    document.getElementById('place-info').style.display = 'block';
-}
-
-// تحميل الأماكن عند تحميل الصفحة
-map.on('load', fetchPlaces);
