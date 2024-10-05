@@ -3,51 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خريطة الأماكن</title>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <title>أماكن الترفيه والسهر</title>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <style>
-        body { 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            flex-direction: row-reverse;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
             height: 100vh;
         }
-        #map { 
-            flex: 1;
+        #map {
+            width: 50%;
             height: 100%;
         }
-        #info-panel {
-            flex: 1;
+        #info-container {
+            width: 50%;
             padding: 20px;
+            box-sizing: border-box;
             overflow-y: auto;
-            background-color: #f8f8f8;
         }
-        #place-info {
-            display: none;
+        .place-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        #no-place-selected {
-            display: block;
-            text-align: center;
-            padding-top: 50px;
-            color: #666;
+        .place-info img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
-    <div id="info-panel">
-        <div id="no-place-selected">
-            <h2>مرحبًا بك في خريطة الأماكن</h2>
-            <p>يرجى النقر على أحد المعالم في الخريطة لعرض المعلومات</p>
-        </div>
-        <div id="place-info">
-            <h2 id="place-name"></h2>
-            <p id="place-description"></p>
-            <img id="place-image" src="" alt="صورة المكان" style="max-width: 100%;">
-        </div>
-    </div>
     <div id="map"></div>
+    <div id="info-container"></div>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src="index.js"></script>
 </body>
 </html>
