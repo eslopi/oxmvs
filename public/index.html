@@ -3,61 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MS|MV</title>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <title>خريطة الأماكن</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-        }
-        #info-container {
-            width: 50%;
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 70%; }
+        #info-panel {
+            position: absolute;
+            top: 0;
+            right: 70%;
+            bottom: 0;
+            width: 30%;
             padding: 20px;
-            box-sizing: border-box;
             overflow-y: auto;
+            background-color: #f8f8f8;
+            display: none;
         }
-        #map {
-            width: 50%;
-            height: 100%;
-            position: relative;
-        }
-        .place-info {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .place-info img {
-            max-width: 100%;
-            height: auto;
-        }
-        #locate-button {
+        #close-info {
             position: absolute;
             top: 10px;
-            left: 10px;
-            z-index: 1;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
+            right: 10px;
             cursor: pointer;
-            border-radius: 4px;
-        }
-        #locate-button:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div id="info-container"></div>
-    <div id="map">
-        <button id="locate-button">تحديد موقعي</button>
+    <div id="map"></div>
+    <div id="info-panel">
+        <span id="close-info">&times;</span>
+        <h2 id="place-name"></h2>
+        <p id="place-description"></p>
+        <img id="place-image" src="" alt="صورة المكان" style="max-width: 100%;">
     </div>
-
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src="index.js"></script>
 </body>
 </html>
