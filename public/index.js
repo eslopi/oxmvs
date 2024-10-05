@@ -37,4 +37,27 @@ function addMarkers() {
         el.style.backgroundSize = '100%';
 
         el.addEventListener('click', () => {
-            showPlaceInfo(place
+            showPlaceInfo(place);
+        });
+
+        try {
+            new mapboxgl.Marker(el)
+                .setLngLat([parseFloat(place.lng), parseFloat(place.lat)])
+                .addTo(map);
+            console.log('Marker added for:', place.name);
+        } catch (error) {
+            console.error('Error adding marker for:', place.name, error);
+        }
+    });
+}
+
+function showPlaceInfo(place) {
+    document.getElementById('place-name').textContent = place.name || 'غير معروف';
+    document.getElementById('place-description').textContent = place.description || 'لا يوجد وصف';
+    document.getElementById('place-image').src = place.image || 'https://placekitten.com/g/300/200';
+    document.getElementById('no-place-selected').style.display = 'none';
+    document.getElementById('place-info').style.display = 'block';
+}
+
+// تحميل الأماكن عند تحميل الصفحة
+map.on('load', fetchPlaces);
