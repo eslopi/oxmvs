@@ -1,71 +1,36 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
-
+mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
-    center: [45.0792, 23.8859],
+    center: [45, 25],
     zoom: 5
 });
 
-let places = [];
-let markers = [];
+const form = document.getElementById('place-form');
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const description = document.getElementById('description').value;
+    const imageUrl = document.getElementById('image-url').value;
+    const lat = parseFloat(document.getElementById('latitude').value);
+    const lng = parseFloat(document.getElementById('longitude').value);
 
-// إنشاء اتصال Socket.IO
-const socket = io();
-
-function fetchPlaces() {
-    fetch('/api/places')
-        .then(response => response.json())
-        .then(data => {
-            places = data;
-            clearMarkers();
-            addMarkers();
-        });
-}
-
-function clearMarkers() {
-    markers.forEach(marker => marker.remove());
-    markers = [];
-}
-
-function addMarkers() {
-    places.forEach(place => {
-        addMarker(place);
-    });
-}
-
-function addMarker(place) {
-    const el = document.createElement('div');
-    el.className = 'marker';
-    el.style.backgroundImage = `url(${place.icon})`;
-    el.style.width = '30px';
-    el.style.height = '30px';
-    el.style.backgroundSize = '100%';
-
-    el.addEventListener('click', () => {
-        showPlaceInfo(place);
-    });
-
-    const marker = new mapboxgl.Marker(el)
-        .setLngLat([place.lng, place.lat])
+    new mapboxgl.Marker()
+        .setLngLat([lng, lat])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${name}</h3><p>${description}</p>`))
         .addTo(map);
 
-    markers.push(marker);
-}
+    const places = JSON.parse(localStorage.getItem('places') || '[]');
+    places.push({ name, description, imageUrl, lat, lng });
+    localStorage.setItem('places', JSON.stringify(places));
 
-function showPlaceInfo(place) {
-    document.getElementById('place-name').textContent = place.name;
-    document.getElementById('place-description').textContent = place.description;
-    document.getElementById('place-image').src = place.image;
-    document.getElementById('no-place-selected').style.display = 'none';
-    document.getElementById('place-info').style.display = 'block';
-}
-
-// استمع لأحداث إضافة مكان جديد
-socket.on('newPlace', (place) => {
-    places.push(place);
-    addMarker(place);
+    form.reset();
 });
 
-// التحميل الأولي للأماكن
-fetchPlaces();
+const savedPlaces = JSON.parse(localStorage.getItem('places') || '[]');
+savedPlaces.forEach(place => {
+    new mapboxgl.Marker()
+        .setLngLat([place.lng, place.lat])
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
+        .addTo(map);
+});
