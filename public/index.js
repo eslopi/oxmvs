@@ -1,4 +1,4 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
+mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
 
 const map = new mapboxgl.Map({
     container: 'map',
@@ -13,37 +13,28 @@ function fetchPlaces() {
     fetch('/api/places')
         .then(response => response.json())
         .then(data => {
+            console.log('Fetched places:', data); // للتحقق من البيانات المستلمة
             places = data;
             addMarkers();
+        })
+        .catch(error => {
+            console.error('Error fetching places:', error);
         });
 }
 
 function addMarkers() {
     places.forEach(place => {
+        if (!place.lng || !place.lat) {
+            console.error('Invalid coordinates for place:', place);
+            return;
+        }
+
         const el = document.createElement('div');
         el.className = 'marker';
-        el.style.backgroundImage = `url(${place.icon})`;
+        el.style.backgroundImage = place.icon ? `url(${place.icon})` : 'url(https://placekitten.com/g/40/40)';
         el.style.width = '30px';
         el.style.height = '30px';
         el.style.backgroundSize = '100%';
 
         el.addEventListener('click', () => {
-            showPlaceInfo(place);
-        });
-
-        new mapboxgl.Marker(el)
-            .setLngLat([place.lng, place.lat])
-            .addTo(map);
-    });
-}
-
-function showPlaceInfo(place) {
-    document.getElementById('place-name').textContent = place.name;
-    document.getElementById('place-description').textContent = place.description;
-    document.getElementById('place-image').src = place.image;
-    document.getElementById('no-place-selected').style.display = 'none';
-    document.getElementById('place-info').style.display = 'block';
-}
-
-// تحميل الأماكن عند تحميل الصفحة
-fetchPlaces();
+            showPlaceInfo(place
