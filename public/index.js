@@ -1,4 +1,4 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
+mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
 
 const map = new mapboxgl.Map({
     container: 'map',
@@ -9,12 +9,14 @@ const map = new mapboxgl.Map({
 
 let places = [];
 
-fetch('/api/places')
-    .then(response => response.json())
-    .then(data => {
-        places = data;
-        addMarkers();
-    });
+function fetchPlaces() {
+    fetch('/api/places')
+        .then(response => response.json())
+        .then(data => {
+            places = data;
+            addMarkers();
+        });
+}
 
 function addMarkers() {
     places.forEach(place => {
@@ -39,9 +41,9 @@ function showPlaceInfo(place) {
     document.getElementById('place-name').textContent = place.name;
     document.getElementById('place-description').textContent = place.description;
     document.getElementById('place-image').src = place.image;
-    document.getElementById('info-panel').style.display = 'block';
+    document.getElementById('no-place-selected').style.display = 'none';
+    document.getElementById('place-info').style.display = 'block';
 }
 
-document.getElementById('close-info').addEventListener('click', () => {
-    document.getElementById('info-panel').style.display = 'none';
-});
+// تحميل الأماكن عند تحميل الصفحة
+fetchPlaces();
