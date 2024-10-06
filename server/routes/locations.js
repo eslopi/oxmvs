@@ -25,14 +25,12 @@ router.get('/', async (req, res) => {
 });
 const mongoose = require('mongoose');
 
+// إعداد نموذج الموقع الذي يحتوي على الحقول المطلوبة
 const locationSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  info: String,
-  image: String,
-  latitude: { type: Number, required: true },
-  longitude: { type: Number, required: true }
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
 });
 
-module.exports = mongoose.model('Location', locationSchema);
-module.exports = router;
+module.exports = mongoose.model('Location', locationSchema); // تصدير النموذج
