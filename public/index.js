@@ -30,35 +30,24 @@ async function loadLocations() {
                 .setPopup(new mapboxgl.Popup().setHTML(`<h3>${location.name}</h3><p>${location.description}</p>`))
                 .addTo(map);
 
-            // إضافة معلومات المواقع في العنصر HTML
-            addLocationInfoToPage(location);
+            // إضافة معلومات المواقع في الجدول
+            addLocationToTable(location);
         });
     } catch (error) {
         console.error('حدث خطأ أثناء جلب المواقع:', error);
     }
 }
 
-// دالة لإضافة معلومات الموقع إلى صفحة المعلومات
-function addLocationInfoToPage(location) {
-    const infoContainer = document.getElementById('info-container'); // العنصر HTML الذي سيحتوي على المعلومات
+// دالة لإضافة معلومات الموقع إلى الجدول
+function addLocationToTable(location) {
+    const tableBody = document.getElementById('locationsTableBody');
 
-    // إنشاء عناصر HTML لعرض المعلومات
-    const locationDiv = document.createElement('div');
-    locationDiv.classList.add('place-info'); // يمكنك إضافة تصميم CSS
+    const row = tableBody.insertRow(); // إنشاء صف جديد
+    const nameCell = row.insertCell(0); // خلية اسم المكان
+    const descriptionCell = row.insertCell(1); // خلية الوصف
+    const coordinatesCell = row.insertCell(2); // خلية الإحداثيات
 
-    const locationName = document.createElement('h3');
-    locationName.textContent = location.name;
-
-    const locationDescription = document.createElement('p');
-    locationDescription.textContent = location.description;
-
-    const locationCoords = document.createElement('p');
-    locationCoords.textContent = `إحداثيات: (${location.latitude}, ${location.longitude})`;
-
-    // تجميع العناصر وإضافتها إلى الصفحة
-    locationDiv.appendChild(locationName);
-    locationDiv.appendChild(locationDescription);
-    locationDiv.appendChild(locationCoords);
-
-    infoContainer.appendChild(locationDiv);
+    nameCell.textContent = location.name;
+    descriptionCell.textContent = location.description;
+    coordinatesCell.textContent = `(${location.latitude}, ${location.longitude})`;
 }
