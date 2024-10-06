@@ -1,5 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config(); // لتحميل المتغيرات من ملف .env
+
+// الاتصال بقاعدة بيانات MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('تم الاتصال بقاعدة البيانات بنجاح'))
+.catch(err => console.error('خطأ في الاتصال بقاعدة البيانات:', err));
+
 const itemRoutes = require('./routes/itemRoutes'); // ربط مسارات المواقع
 require('dotenv').config(); // جلب إعدادات البيئة من ملف .env
 
