@@ -1,5 +1,3 @@
-// admin.js
-
 mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A'; // استبدل بمفتاح الوصول الخاص بك
 
 let map;
@@ -7,7 +5,7 @@ let marker;
 
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
-    loadLocations();
+    loadLocations();  // تحميل المواقع عند تحميل الصفحة
 
     document.getElementById('locationForm').addEventListener('submit', addLocation);
     document.getElementById('locateButton').addEventListener('click', locateUser);
@@ -66,7 +64,7 @@ function locateUser() {
 }
 
 // إرسال موقع جديد إلى الخادم
-document.getElementById('add-location-form').addEventListener('submit', async (e) => {
+document.getElementById('locationForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value;
@@ -86,7 +84,7 @@ document.getElementById('add-location-form').addEventListener('submit', async (e
 
         if (response.ok) {
             alert('تم إضافة الموقع بنجاح');
-            fetchLocations(); // استدعاء وظيفة تحديث المواقع بعد الإضافة
+            loadLocations();  // استدعاء وظيفة تحديث المواقع بعد الإضافة
         } else {
             alert('حدث خطأ أثناء إضافة الموقع');
         }
@@ -95,6 +93,7 @@ document.getElementById('add-location-form').addEventListener('submit', async (e
     }
 });
 
+// تحميل المواقع من قاعدة البيانات وعرضها في الجدول
 async function loadLocations() {
     try {
         const response = await fetch('/api/locations');
@@ -107,7 +106,7 @@ async function loadLocations() {
             const row = tableBody.insertRow();
             row.insertCell(0).textContent = location.name;
             row.insertCell(1).textContent = location.description;
-            row.insertCell(2).textContent = location.info;
+            row.insertCell(2).textContent = location.info || '';  // التعامل مع الحقل الجديد info
             row.insertCell(3).textContent = location.latitude;
             row.insertCell(4).textContent = location.longitude;
 
@@ -122,12 +121,13 @@ async function loadLocations() {
     }
 }
 
+// حذف الموقع من قاعدة البيانات
 async function deleteLocation(id) {
     try {
         const response = await fetch(`/api/locations/${id}`, { method: 'DELETE' });
 
         if (response.ok) {
-            loadLocations();
+            loadLocations();  // تحديث المواقع بعد الحذف
         } else {
             const errorData = await response.json();
             alert(`خطأ: ${errorData.message}`);
