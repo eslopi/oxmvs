@@ -6,31 +6,24 @@ const map = new mapboxgl.Map({
     zoom: 5
 });
 
-const infoContainer = document.getElementById('info-container');
 
-const savedPlaces = JSON.parse(localStorage.getItem('places') || '[]');
+// جلب المواقع من قاعدة البيانات باستخدام API وعرضها على الخريطة
+async function fetchLocations() {
+    try {
+        const response = await fetch('/api/locations');
+        const locations = await response.json();
 
-savedPlaces.forEach(place => {
-    new mapboxgl.Marker()
-        .setLngLat([place.lng, place.lat])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
-        .addTo(map);
-
-    const placeInfo = document.createElement('div');
-    placeInfo.className = 'place-info';
-    placeInfo.innerHTML = `
-        <h2>${place.name}</h2>
-        <p>${place.description}</p>
-        ${place.imageUrl ? `<img src="${place.imageUrl}" alt="${place.name}">` : ''}
-        <p>الإحداثيات: ${place.lat}, ${place.lng}</p>
-    `;
-    infoContainer.appendChild(placeInfo);
-});
-
-if (savedPlaces.length > 0) {
-    const bounds = new mapboxgl.LngLatBounds();
-    savedPlaces.forEach(place => {
-        bounds.extend([place.lng, place.lat]);
-    });
-    map.fitBounds(bounds, { padding: 50 });
+        locations.forEach((location) => {
+            // إضافة المواقع إلى الخريطة باستخدام Mapbox
+            new mapboxgl.Marker()
+                .setLngLat([location.longitude, location.latitude])
+                .setPopup(new mapboxgl.Popup().setHTML(`<h3>${location.name}</h3><p>${location.description}</p>`))
+                .addTo(map);
+        });
+    } catch (error) {
+        console.error('حدث خطأ أثناء جلب المواقع:', error);
+    }
 }
+
+// استدعاء دالة جلب المواقع عند تحميل الصفحة
+fetchLocations();
