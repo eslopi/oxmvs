@@ -3,37 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم</title>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <title>إدارة الأماكن</title>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+        #map {
+            width: 50%;
+            height: 100%;
+        }
+        #form-container {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label, input, textarea {
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div id="map-container">
-        <div id="map"></div>
-        <button id="locateButton" title="تحديد موقعك الحالي">📍</button>
+    <div id="map"></div>
+    <div id="form-container">
+        <h2>إضافة مكان جديد</h2>
+        <form id="place-form">
+            <label for="name">اسم المكان:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="description">وصف المكان:</label>
+            <textarea id="description" name="description" required></textarea>
+
+            <label for="image-url">رابط الصورة:</label>
+            <input type="url" id="image-url" name="image-url">
+
+            <label for="latitude">خط العرض:</label>
+            <input type="number" id="latitude" name="latitude" step="any" required>
+
+            <label for="longitude">خط الطول:</label>
+            <input type="number" id="longitude" name="longitude" step="any" required>
+
+            <button type="submit">إضافة المكان</button>
+        </form>
     </div>
-    <form id="locationForm">
-        <input type="text" id="name" placeholder="اسم الموقع" required>
-        <input type="text" id="description" placeholder="وصف الموقع" required>
-        <input type="text" id="info" placeholder="معلومات إضافية">
-        <input type="number" id="latitude" placeholder="خط العرض" step="any" required>
-        <input type="number" id="longitude" placeholder="خط الطول" step="any" required>
-        <button type="submit">إضافة موقع</button>
-    </form>
-    <table id="locationsTable">
-        <thead>
-            <tr>
-                <th>الاسم</th>
-                <th>الوصف</th>
-                <th>معلومات</th>
-                <th>خط العرض</th>
-                <th>خط الطول</th>
-                <th>الإجراءات</th>
-            </tr>
-        </thead>
-        <tbody id="locationsTableBody"></tbody>
-    </table>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src="admin.js"></script>
 </body>
 </html>

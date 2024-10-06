@@ -1,3 +1,5 @@
+// admin.js
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A'; // استبدل بمفتاح الوصول الخاص بك
 
 let map;
@@ -63,7 +65,7 @@ function locateUser() {
     }
 }
 
-function addLocation(e) {
+async function addLocation(e) {
     e.preventDefault();
 
     const name = document.getElementById('name').value;
@@ -79,38 +81,63 @@ function addLocation(e) {
 
     const location = { name, description, info, latitude, longitude };
 
-    let locations = JSON.parse(localStorage.getItem('locations')) || [];
-    locations.push(location);
-    localStorage.setItem('locations', JSON.stringify(locations));
+    try {
+        const response = await fetch('/api/locations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(location)
+        });
 
-    loadLocations();
-    document.getElementById('locationForm').reset();
+        if (response.ok) {
+            loadLocations();
+            document.getElementById('locationForm').reset();
+        } else {
+            const errorData = await response.json();
+            alert(`خطأ: ${errorData.message}`);
+        }
+    } catch (error) {
+        console.error('خطأ في إضافة الموقع:', error);
+    }
 }
 
-function loadLocations() {
-    const locations = JSON.parse(localStorage.getItem('locations')) || [];
-    const tableBody = document.getElementById('locationsTableBody');
-    tableBody.innerHTML = '';
+async function loadLocations() {
+    try {
+        const response = await fetch('/api/locations');
+        const locations = await response.json();
 
-    locations.forEach((location, index) => {
-        const row = tableBody.insertRow();
-        row.insertCell(0).textContent = location.name;
-        row.insertCell(1).textContent = location.description;
-        row.insertCell(2).textContent = location.info;
-        row.insertCell(3).textContent = location.latitude;
-        row.insertCell(4).textContent = location.longitude;
+        const tableBody = document.getElementById('locationsTableBody');
+        tableBody.innerHTML = '';
 
-        const actionsCell = row.insertCell(5);
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'حذف';
-        deleteButton.onclick = () => deleteLocation(index);
-        actionsCell.appendChild(deleteButton);
-    });
+        locations.forEach((location, index) => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).textContent = location.name;
+            row.insertCell(1).textContent = location.description;
+            row.insertCell(2).textContent = location.info;
+            row.insertCell(3).textContent = location.latitude;
+            row.insertCell(4).textContent = location.longitude;
+
+            const actionsCell = row.insertCell(5);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'حذف';
+            deleteButton.onclick = () => deleteLocation(location._id);
+            actionsCell.appendChild(deleteButton);
+        });
+    } catch (error) {
+        console.error('خطأ في تحميل المواقع:', error);
+    }
 }
 
-function deleteLocation(index) {
-    let locations = JSON.parse(localStorage.getItem('locations')) || [];
-    locations.splice(index, 1);
-    localStorage.setItem('locations', JSON.stringify(locations));
-    loadLocations();
+async function deleteLocation(id) {
+    try {
+        const response = await fetch(`/api/locations/${id}`, { method: 'DELETE' });
+
+        if (response.ok) {
+            loadLocations();
+        } else {
+            const errorData = await response.json();
+            alert(`خطأ: ${errorData.message}`);
+        }
+    } catch (error) {
+        console.error('خطأ في حذف الموقع:', error);
+    }
 }
