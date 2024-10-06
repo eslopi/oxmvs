@@ -65,40 +65,35 @@ function locateUser() {
     }
 }
 
-async function addLocation(e) {
+// إرسال موقع جديد إلى الخادم
+document.getElementById('add-location-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value;
-    const info = document.getElementById('info').value;
-    const latitude = parseFloat(document.getElementById('latitude').value);
-    const longitude = parseFloat(document.getElementById('longitude').value);
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
 
-    if (!name || isNaN(latitude) || isNaN(longitude)) {
-        alert('الرجاء إدخال جميع البيانات المطلوبة بشكل صحيح');
-        return;
-    }
-
-    const location = { name, description, info, latitude, longitude };
+    const newLocation = { name, description, latitude, longitude };
 
     try {
         const response = await fetch('/api/locations', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(location)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newLocation)
         });
 
         if (response.ok) {
-            loadLocations();
-            document.getElementById('locationForm').reset();
+            alert('تم إضافة الموقع بنجاح');
+            fetchLocations(); // استدعاء وظيفة تحديث المواقع بعد الإضافة
         } else {
-            const errorData = await response.json();
-            alert(`خطأ: ${errorData.message}`);
+            alert('حدث خطأ أثناء إضافة الموقع');
         }
     } catch (error) {
-        console.error('خطأ في إضافة الموقع:', error);
+        alert('حدث خطأ أثناء الاتصال بالخادم');
     }
-}
+});
 
 async function loadLocations() {
     try {
