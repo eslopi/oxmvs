@@ -40,11 +40,11 @@ async function loadLocations() {
 
 // دالة لإضافة معلومات الموقع إلى صفحة المعلومات
 function addLocationInfoToPage(location) {
-    const locationsContainer = document.getElementById('locationsContainer'); // العنصر HTML الذي سيحتوي على المعلومات
+    const infoContainer = document.getElementById('info-container'); // العنصر HTML الذي سيحتوي على المعلومات
 
     // إنشاء عناصر HTML لعرض المعلومات
     const locationDiv = document.createElement('div');
-    locationDiv.classList.add('location-info'); // يمكنك إضافة تصميم CSS
+    locationDiv.classList.add('place-info'); // يمكنك إضافة تصميم CSS
 
     const locationName = document.createElement('h3');
     locationName.textContent = location.name;
@@ -60,5 +60,5 @@ function addLocationInfoToPage(location) {
     locationDiv.appendChild(locationDescription);
     locationDiv.appendChild(locationCoords);
 
-    locationsContainer.appendChild(locationDiv);
+    infoContainer.appendChild(locationDiv);
 }
