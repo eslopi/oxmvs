@@ -1,29 +1,64 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
-const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [45, 25],
-    zoom: 5
+mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A'; // مفتاح Mapbox API
+
+let map;
+
+document.addEventListener('DOMContentLoaded', function () {
+    initMap(); // تهيئة الخريطة عند تحميل الصفحة
+    loadLocations(); // تحميل وعرض المواقع على الخريطة وعرض المعلومات
 });
 
+// تهيئة الخريطة
+function initMap() {
+    map = new mapboxgl.Map({
+        container: 'map', // اسم العنصر HTML الذي يحتوي على الخريطة
+        style: 'mapbox://styles/mapbox/streets-v11', // نمط الخريطة
+        center: [46.6753, 24.7136], // خطوط الطول والعرض الافتراضية (الرياض)
+        zoom: 9 // مستوى التكبير الافتراضي
+    });
+}
 
-// جلب المواقع من قاعدة البيانات باستخدام API وعرضها على الخريطة
-async function fetchLocations() {
+// دالة لتحميل المواقع من الخادم وعرضها على الخريطة وفي صفحة المعلومات
+async function loadLocations() {
     try {
-        const response = await fetch('/api/locations');
+        const response = await fetch('/api/locations'); // جلب البيانات من الخادم
         const locations = await response.json();
 
         locations.forEach((location) => {
             // إضافة المواقع إلى الخريطة باستخدام Mapbox
             new mapboxgl.Marker()
-                .setLngLat([location.longitude, location.latitude])
+                .setLngLat([location.longitude, location.latitude]) // استخدام خطوط الطول والعرض
                 .setPopup(new mapboxgl.Popup().setHTML(`<h3>${location.name}</h3><p>${location.description}</p>`))
                 .addTo(map);
+
+            // إضافة معلومات المواقع في العنصر HTML
+            addLocationInfoToPage(location);
         });
     } catch (error) {
         console.error('حدث خطأ أثناء جلب المواقع:', error);
     }
 }
 
-// استدعاء دالة جلب المواقع عند تحميل الصفحة
-fetchLocations();
+// دالة لإضافة معلومات الموقع إلى صفحة المعلومات
+function addLocationInfoToPage(location) {
+    const locationsContainer = document.getElementById('locationsContainer'); // العنصر HTML الذي سيحتوي على المعلومات
+
+    // إنشاء عناصر HTML لعرض المعلومات
+    const locationDiv = document.createElement('div');
+    locationDiv.classList.add('location-info'); // يمكنك إضافة تصميم CSS
+
+    const locationName = document.createElement('h3');
+    locationName.textContent = location.name;
+
+    const locationDescription = document.createElement('p');
+    locationDescription.textContent = location.description;
+
+    const locationCoords = document.createElement('p');
+    locationCoords.textContent = `إحداثيات: (${location.latitude}, ${location.longitude})`;
+
+    // تجميع العناصر وإضافتها إلى الصفحة
+    locationDiv.appendChild(locationName);
+    locationDiv.appendChild(locationDescription);
+    locationDiv.appendChild(locationCoords);
+
+    locationsContainer.appendChild(locationDiv);
+}
