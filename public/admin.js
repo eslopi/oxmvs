@@ -1,31 +1,36 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A'; // استبدل بمفتاح الوصول الخاص بك
+// مفتاح خريطة Mapbox الخاص بك
+mapboxgl.accessToken = 'pk.eyJ1IjoiZXNsb3BpIiwiYSI6ImNtMWV6OHI3eDFoeGMybHF6bmR0OXcwbWIifQ.PgBVsl5bPmcOQ_47NDK10A';
 
 let map;
 let marker;
 
+// تحميل الخريطة وتحديد الموقع عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
-    initMap();
-    loadLocations();  // تحميل المواقع عند تحميل الصفحة
+    initMap(); // تهيئة الخريطة
+    loadLocations(); // تحميل المواقع المخزنة وعرضها في الجدول
 
-    document.getElementById('locationForm').addEventListener('submit', addLocation);
-    document.getElementById('locateButton').addEventListener('click', locateUser);
+    document.getElementById('locationForm').addEventListener('submit', addLocation); // إضافة موقع جديد
+    document.getElementById('locateButton').addEventListener('click', locateUser); // تحديد موقع المستخدم الحالي
 });
 
+// تهيئة الخريطة باستخدام Mapbox
 function initMap() {
     map = new mapboxgl.Map({
-        container: 'map',
+        container: 'map', // العنصر HTML الذي يحتوي على الخريطة
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [46.6753, 24.7136], // خطوط الطول والعرض لمدينة الرياض
         zoom: 9
     });
 
+    // عند تحميل الخريطة، السماح للمستخدم بإضافة علامة مكان عن طريق النقر على الخريطة
     map.on('load', function () {
         map.on('click', function(e) {
-            setMarker(e.lngLat);
+            setMarker(e.lngLat); // إضافة الماركر عند النقر
         });
     });
 }
 
+// إضافة أو تحديث الماركر على الخريطة بناءً على الإحداثيات
 function setMarker(lngLat) {
     if (marker) {
         marker.remove();
@@ -34,10 +39,11 @@ function setMarker(lngLat) {
         .setLngLat(lngLat)
         .addTo(map);
 
-    document.getElementById('latitude').value = lngLat.lat.toFixed(6);
+    document.getElementById('latitude').value = lngLat.lat.toFixed(6); // تحديث الحقول بالقيم الجديدة
     document.getElementById('longitude').value = lngLat.lng.toFixed(6);
 }
 
+// تحديد موقع المستخدم بناءً على الـ GPS الخاص بالمتصفح
 function locateUser() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -49,7 +55,7 @@ function locateUser() {
                 center: lngLat,
                 zoom: 14
             });
-            setMarker(lngLat);
+            setMarker(lngLat); // تحديث الماركر بموقع المستخدم
         }, function(error) {
             console.error("خطأ في تحديد الموقع:", error);
             alert("لم نتمكن من تحديد موقعك. يرجى التأكد من تفعيل خدمة تحديد الموقع في متصفحك.");
@@ -63,8 +69,8 @@ function locateUser() {
     }
 }
 
-// إرسال موقع جديد إلى الخادم
-document.getElementById('locationForm').addEventListener('submit', async (e) => {
+// إرسال موقع جديد إلى الخادم وإضافته إلى قاعدة البيانات
+document.getElementById('add-location-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value;
@@ -84,7 +90,7 @@ document.getElementById('locationForm').addEventListener('submit', async (e) => 
 
         if (response.ok) {
             alert('تم إضافة الموقع بنجاح');
-            loadLocations();  // استدعاء وظيفة تحديث المواقع بعد الإضافة
+            loadLocations(); // تحديث المواقع بعد الإضافة
         } else {
             alert('حدث خطأ أثناء إضافة الموقع');
         }
@@ -93,27 +99,25 @@ document.getElementById('locationForm').addEventListener('submit', async (e) => 
     }
 });
 
-// تحميل المواقع من قاعدة البيانات وعرضها في الجدول
+// تحميل المواقع وعرضها في الجدول
 async function loadLocations() {
     try {
         const response = await fetch('/api/locations');
         const locations = await response.json();
 
         const tableBody = document.getElementById('locationsTableBody');
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = ''; // تفريغ الجدول قبل إضافة البيانات الجديدة
 
         locations.forEach((location, index) => {
-            const row = tableBody.insertRow();
-            row.insertCell(0).textContent = location.name;
-            row.insertCell(1).textContent = location.description;
-            row.insertCell(2).textContent = location.info || '';  // التعامل مع الحقل الجديد info
-            row.insertCell(3).textContent = location.latitude;
-            row.insertCell(4).textContent = location.longitude;
+            const row = tableBody.insertRow(); // إنشاء صف جديد في الجدول
+            row.insertCell(0).textContent = location.name; // اسم الموقع
+            row.insertCell(1).textContent = location.description; // وصف الموقع
+            row.insertCell(2).textContent = `${location.latitude}, ${location.longitude}`; // الإحداثيات
 
-            const actionsCell = row.insertCell(5);
+            const actionsCell = row.insertCell(3);
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'حذف';
-            deleteButton.onclick = () => deleteLocation(location._id);
+            deleteButton.onclick = () => deleteLocation(location._id); // إضافة زر حذف
             actionsCell.appendChild(deleteButton);
         });
     } catch (error) {
@@ -127,7 +131,7 @@ async function deleteLocation(id) {
         const response = await fetch(`/api/locations/${id}`, { method: 'DELETE' });
 
         if (response.ok) {
-            loadLocations();  // تحديث المواقع بعد الحذف
+            loadLocations(); // تحديث المواقع بعد الحذف
         } else {
             const errorData = await response.json();
             alert(`خطأ: ${errorData.message}`);
