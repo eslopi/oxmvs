@@ -1,6 +1,18 @@
 const express = require('express');
-const router = express.Router();
+const mongoose = require('mongoose');
 const Location = require('../models/Location');
+require('dotenv').config(); // جلب إعدادات البيئة من ملف .env
+
+const app = express();
+const router = express.Router();
+
+// إعداد استخدام JSON في طلبات HTTP
+app.use(express.json());
+
+// الاتصال بقاعدة بيانات MongoDB (تأكد من أن MONGODB_URI موجودة في ملف .env)
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('تم الاتصال بقاعدة البيانات بنجاح'))
+    .catch((error) => console.error('خطأ في الاتصال بقاعدة البيانات:', error));
 
 // إنشاء موقع جديد
 router.post('/locations', async (req, res) => {
@@ -37,4 +49,8 @@ router.delete('/locations/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+// ربط المسارات التي تتعامل مع المواقع
+app.use('/api', router);
+
+const PORT = process.env.PORT || 3000; // تحديد المنفذ من المتغيرات البيئية أو الافتراضي 3000
+app.listen(PORT, () => console.log(`الخادم يعمل على المنفذ ${PORT}`));

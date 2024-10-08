@@ -7,14 +7,8 @@ require('dotenv').config();  // تحميل متغيرات البيئة من مل
 
 const app = express();
 
-// Middleware
-app.use(express.json());  // لتحليل JSON
-
-// استخدام Middleware الحماية مع مسارات العناصر
-app.use('/api/items', protect, itemRoutes);  // حماية مسارات العناصر
-
-// مسارات المصادقة
-app.use('/api/auth', authRoutes);  // مسارات المصادقة
+// Middleware لتحليل JSON
+app.use(express.json());
 
 // الاتصال بقاعدة البيانات MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -23,6 +17,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
 .then(() => console.log('تم الاتصال بقاعدة البيانات MongoDB بنجاح'))
 .catch(err => console.error('خطأ في الاتصال بقاعدة البيانات:', err));
+
+// مسارات المصادقة
+app.use('/api/auth', authRoutes);  // مسارات المصادقة
+
+// استخدام Middleware الحماية مع مسارات العناصر
+app.use('/api/items', protect, itemRoutes);  // حماية مسارات العناصر
 
 // إعداد المنفذ
 const PORT = process.env.PORT || 3000;

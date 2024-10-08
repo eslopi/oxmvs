@@ -8,29 +8,42 @@ const map = new mapboxgl.Map({
 
 const infoContainer = document.getElementById('info-container');
 
-const savedPlaces = JSON.parse(localStorage.getItem('places') || '[]');
+// جلب المواقع من MongoDB وعرضها على الخريطة وفي قائمة المعلومات
+async function loadLocations() {
+    try {
+        const response = await fetch('/api/locations');
+        const places = await response.json();
 
-savedPlaces.forEach(place => {
-    new mapboxgl.Marker()
-        .setLngLat([place.lng, place.lat])
-        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
-        .addTo(map);
+        places.forEach(place => {
+            // إضافة الماركرات على الخريطة
+            new mapboxgl.Marker()
+                .setLngLat([place.lng, place.lat])
+                .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
+                .addTo(map);
 
-    const placeInfo = document.createElement('div');
-    placeInfo.className = 'place-info';
-    placeInfo.innerHTML = `
-        <h2>${place.name}</h2>
-        <p>${place.description}</p>
-        ${place.imageUrl ? `<img src="${place.imageUrl}" alt="${place.name}">` : ''}
-        <p>الإحداثيات: ${place.lat}, ${place.lng}</p>
-    `;
-    infoContainer.appendChild(placeInfo);
-});
+            // إضافة المعلومات في الجزء الخاص بالمعلومات
+            const placeInfo = document.createElement('div');
+            placeInfo.className = 'place-info';
+            placeInfo.innerHTML = `
+                <h2>${place.name}</h2>
+                <p>${place.description}</p>
+                ${place.imageUrl ? `<img src="${place.imageUrl}" alt="${place.name}">` : ''}
+                <p>الإحداثيات: ${place.lat}, ${place.lng}</p>
+            `;
+            infoContainer.appendChild(placeInfo);
+        });
 
-if (savedPlaces.length > 0) {
-    const bounds = new mapboxgl.LngLatBounds();
-    savedPlaces.forEach(place => {
-        bounds.extend([place.lng, place.lat]);
-    });
-    map.fitBounds(bounds, { padding: 50 });
+        if (places.length > 0) {
+            const bounds = new mapboxgl.LngLatBounds();
+            places.forEach(place => {
+                bounds.extend([place.lng, place.lat]);
+            });
+            map.fitBounds(bounds, { padding: 50 });
+        }
+    } catch (error) {
+        console.error('حدث خطأ أثناء جلب المواقع:', error);
+    }
 }
+
+// استدعاء دالة تحميل المواقع عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', loadLocations);
