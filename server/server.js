@@ -1,30 +1,29 @@
-// server.js
-
 const express = require('express');
 const mongoose = require('mongoose');
-const itemRoutes = require('./routes/itemRoutes');
-<<<<<<< HEAD
 const authRoutes = require('./routes/authRoutes');  // إضافة مسارات المصادقة
 const protect = require('./middleware/authMiddleware');  // إضافة Middleware الحماية
-=======
-const locationRoutes = require('./routes/locationRoutes'); // إضافة مسار للأماكن
->>>>>>> 12b00e4d159c16876c1deeb6329c294a42a68dae
-require('dotenv').config();
+const itemRoutes = require('./routes/itemRoutes');  // مسارات العناصر
+require('dotenv').config();  // تحميل متغيرات البيئة من ملف .env
 
 const app = express();
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('تم الاتصال بقاعدة البيانات بنجاح'))
-  .catch((error) => console.error('خطأ في الاتصال بقاعدة البيانات:', error));
+// Middleware
+app.use(express.json());  // لتحليل JSON
 
-app.use(express.json());
-<<<<<<< HEAD
+// استخدام Middleware الحماية مع مسارات العناصر
 app.use('/api/items', protect, itemRoutes);  // حماية مسارات العناصر
-app.use('/api/auth', authRoutes);  // مسارات المصادقة
-=======
-app.use('/api/items', itemRoutes);
-app.use('/api/locations', locationRoutes); // مسار جديد للأماكن
->>>>>>> 12b00e4d159c16876c1deeb6329c294a42a68dae
 
+// مسارات المصادقة
+app.use('/api/auth', authRoutes);  // مسارات المصادقة
+
+// الاتصال بقاعدة البيانات MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('تم الاتصال بقاعدة البيانات MongoDB بنجاح'))
+.catch(err => console.error('خطأ في الاتصال بقاعدة البيانات:', err));
+
+// إعداد المنفذ
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`الخادم يعمل على المنفذ ${PORT}`));

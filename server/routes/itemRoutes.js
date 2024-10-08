@@ -1,53 +1,40 @@
-<<<<<<< HEAD
-const express = require('express');
-const router = express.Router();
-const itemController = require('../controllers/itemController');
-
-router.post('/', itemController.createItem);
-router.get('/', itemController.getAllItems);
-router.get('/:id', itemController.getItem);
-router.put('/:id', itemController.updateItem);
-router.delete('/:id', itemController.deleteItem);
-
-module.exports = router;
-=======
-// locationRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const Location = require('../models/Location');
 
-// إضافة مكان جديد
-router.post('/', async (req, res) => {
+// إنشاء موقع جديد
+router.post('/locations', async (req, res) => {
   try {
-    const location = new Location(req.body);
-    await location.save();
-    res.status(201).json(location);
+    const { name, description, latitude, longitude } = req.body;
+    const newLocation = new Location({ name, description, latitude, longitude });
+    await newLocation.save();
+    res.status(201).json(newLocation);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'حدث خطأ أثناء إنشاء الموقع', error: error.message });
   }
 });
 
-// الحصول على جميع الأماكن
-router.get('/', async (req, res) => {
+// استرجاع جميع المواقع من قاعدة البيانات
+router.get('/locations', async (req, res) => {
   try {
     const locations = await Location.find();
-    res.json(locations);
+    res.status(200).json(locations);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'حدث خطأ أثناء استرجاع المواقع', error: error.message });
   }
 });
 
-// حذف مكان
-router.delete('/:id', async (req, res) => {
+// حذف موقع
+router.delete('/locations/:id', async (req, res) => {
   try {
-    const deletedLocation = await Location.findByIdAndDelete(req.params.id);
-    if (!deletedLocation) return res.status(404).json({ message: 'الموقع غير موجود' });
-    res.json({ message: 'تم حذف الموقع بنجاح' });
+    const location = await Location.findByIdAndDelete(req.params.id);
+    if (!location) {
+      return res.status(404).json({ message: 'الموقع غير موجود' });
+    }
+    res.status(200).json({ message: 'تم حذف الموقع بنجاح' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'حدث خطأ أثناء حذف الموقع', error: error.message });
   }
 });
 
 module.exports = router;
->>>>>>> 12b00e4d159c16876c1deeb6329c294a42a68dae
