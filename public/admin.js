@@ -6,56 +6,51 @@ const map = new mapboxgl.Map({
     zoom: 5
 });
 
-const form = document.getElementById('place-form');
-form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    // جلب بيانات المدخلات من النموذج
-    const name = document.getElementById('name').value;
-    const description = document.getElementById('description').value;
-    const imageUrl = document.getElementById('image-url').value;
-    const lat = parseFloat(document.getElementById('latitude').value);
-    const lng = parseFloat(document.getElementById('longitude').value);
+const infoContainer = document.getElementById('info-container');
 
-    // إرسال البيانات إلى الخادم لحفظها في MongoDB
-    try {
-        const response = await fetch('/api/locations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, description, imageUrl, lat, lng })
-        });
+// إضافة أداة التحكم في الموقع
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true,
+    showUserHeading: true
+}));
 
-        if (response.ok) {
-            new mapboxgl.Marker()
-                .setLngLat([lng, lat])
-                .setPopup(new mapboxgl.Popup().setHTML(`<h3>${name}</h3><p>${description}</p>`))
-                .addTo(map);
-            
-            alert('تمت إضافة المكان بنجاح');
-        } else {
-            alert('حدث خطأ أثناء إضافة المكان');
-        }
-    } catch (error) {
-        console.error('حدث خطأ أثناء الاتصال بالخادم:', error);
-    }
-
-    form.reset(); // إعادة تعيين النموذج بعد الإضافة
-});
-
-// تحميل المواقع المخزنة من MongoDB وعرضها على الخريطة
+// جلب المواقع من MongoDB وعرضها على الخريطة وفي قائمة المعلومات
 async function loadLocations() {
     try {
         const response = await fetch('/api/locations');
         const places = await response.json();
 
         places.forEach(place => {
+            // إضافة الماركرات على الخريطة
             new mapboxgl.Marker()
                 .setLngLat([place.lng, place.lat])
                 .setPopup(new mapboxgl.Popup().setHTML(`<h3>${place.name}</h3><p>${place.description}</p>`))
                 .addTo(map);
+
+            // إضافة المعلومات في الجزء الخاص بالمعلومات
+            const placeInfo = document.createElement('div');
+            placeInfo.className = 'place-info';
+            placeInfo.innerHTML = `
+                <h2>${place.name}</h2>
+                <p>${place.description}</p>
+                ${place.imageUrl ? `<img src="${place.imageUrl}" alt="${place.name}">` : ''}
+                <p>الإحداثيات: ${place.lat}, ${place.lng}</p>
+            `;
+            infoContainer.appendChild(placeInfo);
         });
+
+        if (places.length > 0) {
+            const bounds = new mapboxgl.LngLatBounds();
+            places.forEach(place => {
+                bounds.extend([place.lng, place.lat]);
+            });
+            map.fitBounds(bounds, { padding: 50 });
+        }
     } catch (error) {
-        console.error('خطأ في تحميل المواقع:', error);
+        console.error('حدث خطأ أثناء جلب المواقع:', error);
     }
 }
 
