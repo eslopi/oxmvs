@@ -3,44 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أماكن الترفيه والسهر</title>
+    <title>MS|MV - أماكن الترفيه والسهر</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
+        /* ... (الأنماط الحالية تبقى كما هي) ... */
+        .main-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
-        #map {
-            width: 50%;
-            height: 100%;
-        }
-        #info-container {
-            width: 50%;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            direction: rtl;
-        }
-        .place-info {
+        .sub-title {
+            text-align: center;
+            font-size: 20px;
             margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .place-info img {
-            max-width: 100%;
-            height: auto;
         }
     </style>
 </head>
 <body>
+    <h1 class="main-title">MS|MV</h1>
+    <h2 class="sub-title">أماكن الترفيه والسهر</h2>
     <div id="map"></div>
-    <div id="info-container"></div> <!-- سيتم عرض المعلومات هنا -->
-
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <div id="info-container"></div>
     <script src="index.js"></script>
 </body>
 </html>
